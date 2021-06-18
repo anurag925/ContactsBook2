@@ -7,6 +7,8 @@
 
     <grid name="contact-grid" title="Contacts" model="com.axelor.contact.db.Contact">
         <field name="id"/>
+        <field name="firstName"/>
+        <field name="lastName"/>
         <field name="name"/>
         <field name="contactNumber"/>
         <field name="testint"/>
@@ -17,6 +19,8 @@
           model="com.axelor.contact.db.Contact">
 		  <panel>
               <field name="id"/>
+              <field name="firstName"/>
+              <field name="lastName"/>
               <field name="name"/>
               <field name="contactNumber"/>
               <field name="testint"/>

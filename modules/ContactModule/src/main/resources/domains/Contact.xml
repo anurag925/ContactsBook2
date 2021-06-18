@@ -6,7 +6,18 @@
     <module name="contact" package="com.axelor.contact.db"/>
 
     <entity name="Contact">
-        <string name="name" required="true" />
+
+
+        <string name="firstName" required="true"/>
+        <string name="lastName" required="false"/>
+
+        <string name="name" ><![CDATA[
+        if (firstName == null) {
+            return null;
+        }
+        return firstName + " " + lastName;
+    ]]></string>
+
         <long name="contactNumber" required="true"/>
         <integer name="testint"/>
         <boolean name="testBoolean"/>

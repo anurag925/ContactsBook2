@@ -19,6 +19,8 @@ package com.axelor.contact.db;
 
 import java.util.Objects;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -30,13 +32,20 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.axelor.auth.db.AuditableModel;
+import com.axelor.db.annotations.VirtualColumn;
 import com.axelor.db.annotations.Widget;
 import com.google.common.base.MoreObjects;
 
 @Entity
+@DynamicInsert
+@DynamicUpdate
 @Table(name = "CONTACT_CONTACT", indexes = { @Index(columnList = "name") })
 public class Contact extends AuditableModel {
 
@@ -46,6 +55,12 @@ public class Contact extends AuditableModel {
 	private Long id;
 
 	@NotNull
+	private String firstName;
+
+	private String lastName;
+
+	@VirtualColumn
+	@Access(AccessType.PROPERTY)
 	private String name;
 
 	@NotNull
@@ -77,8 +92,37 @@ public class Contact extends AuditableModel {
 		this.id = id;
 	}
 
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
 	public String getName() {
+		try {
+			name = computeName();
+		} catch (NullPointerException e) {
+			Logger logger = LoggerFactory.getLogger(getClass());
+			logger.error("NPE in function field: getName()", e);
+		}
 		return name;
+	}
+
+	protected String computeName() {
+		if (firstName == null) {
+			return null;
+		}
+		return firstName + " " + lastName;
 	}
 
 	public void setName(String name) {
@@ -140,7 +184,8 @@ public class Contact extends AuditableModel {
 	public String toString() {
 		return MoreObjects.toStringHelper(this)
 			.add("id", getId())
-			.add("name", getName())
+			.add("firstName", getFirstName())
+			.add("lastName", getLastName())
 			.add("contactNumber", getContactNumber())
 			.add("testint", getTestint())
 			.add("testBoolean", getTestBoolean())
